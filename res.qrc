@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shader/fragment.frag</file>
+        <file>shader/vertex.vert</file>
+        <file>shader/bezier.geom</file>
+    </qresource>
+</RCC>
