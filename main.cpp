@@ -9,5 +9,4 @@ int main(int argc, char *argv[]) {
     p->setCentralWidget(gl);
     p->show();
     return QApplication::exec();
-    
 }

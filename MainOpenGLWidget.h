@@ -13,6 +13,7 @@
 #include <QTime>
 #include <QTimer>
 #include "MainWindow.h"
+#include "VirtualBall.h"
 
 
 
@@ -25,13 +26,43 @@ protected:
     void resizeGL( int w, int h) override;
     void paintGL() override;
     ~MainOpenGLWidget() override;
+
+
 private slots:
-    void on_time_out();
+    void time_out();
+
+
+protected:
+    void mousePressEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
+    void wheelEvent(QWheelEvent*) override;
+    void keyPressEvent(QKeyEvent*) override;
+
+
 private:
+    float fov = 45.0f;
+    bool leftButtonPressed = false;
     QStatusBar *statusBar;
     QOpenGLShaderProgram program;
     QOpenGLVertexArrayObject VAO;
+    QVector<QVector3D> vertices;
+    VirtualBall vBall;
     QTimer timer;
+    // shader uniform
+    int u_model{};
+    int u_view{};
+    int u_projection{};
+    int u_normal{};
+
+    // matrix
+    QMatrix4x4 m_projection;
+    QMatrix4x4 m_model;
+    QMatrix4x4 m_view;
+    QMatrix4x4 m_normal;
+
+
+    QVector3D cameraPos{0.0f, 0.0f, 15.0f};
 };
 
 
