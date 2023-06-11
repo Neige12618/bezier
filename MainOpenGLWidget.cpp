@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 
 
+
 MainOpenGLWidget::MainOpenGLWidget(QWidget *parent): QOpenGLWidget(parent) {
     auto *p = dynamic_cast<MainWindow*> (parent);
     statusBar = p->statusBar;
@@ -43,7 +44,7 @@ void MainOpenGLWidget::initializeGL() {
 
 void MainOpenGLWidget::resizeGL(int w, int h) {
     vBall.setBounds((float)w, (float)h);
-//    glViewport(0, 0, w, h);
+    glViewport(0, 0, w, h);
 
 
     glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
@@ -58,7 +59,7 @@ void MainOpenGLWidget::paintGL() {
 
 
     m_model = vBall.RotateMatrix();
-    m_view.lookAt(cameraPos, QVector3D(0.0f, 0.0f, 0.0f),QVector3D(0.0f, 1.0f, 0.0f));
+    m_view.lookAt(camera.GetPos(), camera.GetCenter(),camera.GetUp());
     m_projection.perspective(fov, (float)width() / (float)(height()), 0.1f, 1000.0f);
 
     program.bind();
@@ -81,17 +82,23 @@ void MainOpenGLWidget::time_out() {
 
 void MainOpenGLWidget::mousePressEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
-        vBall.click((float)e->pos().x(), (float)e->pos().y());
+        camera.click(e->pos());
         leftButtonPressed = true;
     } else if (e->button() == Qt::RightButton) {
-
+        vBall.click(e->pos());
+        rightButtonPressed = true;
     }
 }
 
 
 void MainOpenGLWidget::mouseMoveEvent(QMouseEvent* e) {
     if (leftButtonPressed) {
-        vBall.dragTo(e->pos().x(), e->pos().y());
+        camera.dragTo(e->pos());
+        update();
+        camera.click(e->pos());
+    }
+    if (rightButtonPressed) {
+        vBall.dragTo(e->pos());
         update();
     }
 }
@@ -99,8 +106,10 @@ void MainOpenGLWidget::mouseMoveEvent(QMouseEvent* e) {
 
 void MainOpenGLWidget::mouseReleaseEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
-        vBall.push();
         leftButtonPressed = false;
+    } else if (e->button() == Qt::RightButton) {
+        rightButtonPressed = false;
+        vBall.push();
     }
 }
 
@@ -126,24 +135,7 @@ void MainOpenGLWidget::wheelEvent(QWheelEvent* e) {
 }
 
 void MainOpenGLWidget::keyPressEvent(QKeyEvent *e) {
-    switch (e->key()) {
-        case Qt::Key_W: {
-            cameraPos.setY(cameraPos.y() + 1);
-            break;
-        }
-        case Qt::Key_A: {
-            cameraPos.setX(cameraPos.x() + 1);
-            break;
-        }
-        case Qt::Key_S: {
-            cameraPos.setY(cameraPos.y() - 1);
-            break;
-        }
-        case Qt::Key_D: {
-            cameraPos.setX(cameraPos.x() - 1);
-            break;
-        }
-    }
+    camera.OnKeyBoard(e->key());
     update();
 }
 

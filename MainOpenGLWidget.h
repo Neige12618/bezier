@@ -14,6 +14,7 @@
 #include <QTimer>
 #include "MainWindow.h"
 #include "VirtualBall.h"
+#include "Camera.h"
 
 
 
@@ -43,6 +44,7 @@ protected:
 private:
     float fov = 45.0f;
     bool leftButtonPressed = false;
+    bool rightButtonPressed = false;
     QStatusBar *statusBar;
     QOpenGLShaderProgram program;
     QOpenGLVertexArrayObject VAO;
@@ -62,7 +64,7 @@ private:
     QMatrix4x4 m_normal;
 
 
-    QVector3D cameraPos{0.0f, 0.0f, 15.0f};
+    Camera camera;
 };
 
 

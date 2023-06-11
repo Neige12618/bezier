@@ -15,9 +15,10 @@ public:
     ~VirtualBall() = default;
     void setBounds(float new_width, float new_height);
     QMatrix4x4 RotateMatrix();
-    QVector3D mapToSphere(float x, float y) const;
-    void click(float x,float y);
-    void dragTo(float x, float y);
+    [[nodiscard]]
+    QVector3D mapToSphere(int x, int y) const;
+    void click(const QPoint &pos);
+    void dragTo(const QPoint &pos);
     void push();
     static QMatrix4x4 quaternionToMat(QQuaternion& q);
 

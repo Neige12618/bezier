@@ -22,34 +22,34 @@ QMatrix4x4 VirtualBall::RotateMatrix() {
 }
 
 
-QVector3D VirtualBall::mapToSphere(float x, float y) const {
+QVector3D VirtualBall::mapToSphere(int x, int y) const {
     //首先将点[0,width],[0,height]映射到[-1,1],[1,-1]上
-    x = x * 2.0f / _width - 1;
-    y = y * (-2.0f) / _height + 1;
-    float d = x * x + y * y;
+    float xx = (float)x * 2.0f / _width - 1;
+    float yy = (float)y * (-2.0f) / _height + 1;
+    float d = xx * xx + yy * yy;
 
     if (d <= 1) {
-        return {x, y, qSqrt(1 - d)};
+        return {xx, yy, qSqrt(1 - d)};
     } else {
-        return {x / qSqrt(d), y / qSqrt(d), 0};
+        return {xx / qSqrt(d), yy / qSqrt(d), 0};
     }
 }
 
 
-void VirtualBall::click(float x, float y) {
-    last_pos = mapToSphere(x, y);
+void VirtualBall::click(const QPoint &pos) {
+    last_pos = mapToSphere(pos.x(), pos.y());
 }
 
 
-void VirtualBall::dragTo(float x, float y) {
-    new_pos = mapToSphere(x, y);
+void VirtualBall::dragTo(const QPoint &pos) {
+    new_pos = mapToSphere(pos.x(), pos.y());
 
     QVector3D axis = QVector3D::crossProduct(last_pos, new_pos); //叉积为旋转轴
     axis.normalize();
     float angle = qAsin((QVector3D::crossProduct(last_pos, new_pos)).length()); //旋转角度
     angle = (float) (angle / M_PI * 180);
     //Quaternion参数中的角度不是弧度
-    QQuaternion temp = QQuaternion::fromAxisAndAngle( axis,2*angle); //生成四元数，其中为了旋转360度，角度为2倍
+    QQuaternion temp = QQuaternion::fromAxisAndAngle( axis, 2 * angle); //生成四元数，其中为了旋转360度，角度为2倍
     currentRotate = temp*LastRotate; //保存到currentRotate中
 }
 
