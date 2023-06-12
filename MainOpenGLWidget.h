@@ -12,10 +12,11 @@
 #include <QOpenGLVertexArrayObject>
 #include <QTime>
 #include <QTimer>
-#include "MainWindow.h"
+#include <QStatusBar>
 #include "VirtualBall.h"
 #include "Camera.h"
 #include "Mode.h"
+#include "GeometryEngine.h"
 
 
 
@@ -29,26 +30,25 @@ protected:
     void paintGL() override;
     ~MainOpenGLWidget() override;
 
+private:
+    void unProject(QVector3D &pos) const;
 
 
 protected:
-    void mousePressEvent(QMouseEvent*) override;
-    void mouseMoveEvent(QMouseEvent*) override;
-    void mouseReleaseEvent(QMouseEvent*) override;
-    void wheelEvent(QWheelEvent*) override;
-    void keyPressEvent(QKeyEvent*) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void wheelEvent(QWheelEvent* e) override;
+    void keyPressEvent(QKeyEvent* e) override;
 
 
 private:
     float fov = 45.0f;
+    int width;
+    int height;
     bool leftButtonPressed = false;
     bool rightButtonPressed = false;
     QOpenGLShaderProgram program;
-    QOpenGLVertexArrayObject VAO;
-    QVector<QVector3D> vertices;
-    VirtualBall vBall;
-    MainWindow *parent;
-    QStatusBar *statusBar;
     // shader uniform
     int uModel{};
     int uView{};
@@ -63,16 +63,28 @@ private:
 
     // camera
     Camera camera;
+    VirtualBall vBall;
 
     // mode
-    Mode *mode;
-    DrawMode *drawMode;
+    Mode mode = Mode::EditMode;
+    DrawMode drawMode = DrawMode::Bezier;
 
 
-    // draw array
-    QVector<QVector3D> bezierCurve;
-    QVector<QVector3D> nCurve;
-    QVector<QVector3D> bSpline;
+    // control points
+    QVector<QVector3D> controlPoints;
+
+    GeometryEngine *engine;
+
+
+public:
+    void modeBezierCurve();
+    void modeNCurve();
+    void modeBSpline();
+    void modeBezierSurface();
+    void modeNSurface();
+    void modeBSplineSurface();
+    void modeEdit();
+    void modeView();
 };
 
 

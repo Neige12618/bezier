@@ -17,11 +17,11 @@ public:
     [[nodiscard]]
     const QVector3D& GetPos() const;
     [[nodiscard]]
-    const QVector3D& GetTarget() const;
+    QVector2D GetAngle() const;
     [[nodiscard]]
     const QVector3D& GetUp() const;
     [[nodiscard]]
-    const QVector3D& GetCenter();
+    QVector3D GetCenter() const ;
     void press(const QPoint &pos);
     void move(const QPoint &pos);
 
@@ -39,6 +39,7 @@ private:
     float m_angleV = 0.0f;
 
     float speed = 0.5f;
+    float distance = 10.0f;
 };
 
 

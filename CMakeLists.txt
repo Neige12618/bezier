@@ -16,7 +16,7 @@ find_package(Qt6 COMPONENTS
         OpenGLWidgets
         REQUIRED)
 qt_add_resources(qrc_FILES res.qrc)
-add_executable(bezier main.cpp ${qrc_FILES} MainOpenGLWidget.cpp MainOpenGLWidget.h MainWindow.cpp MainWindow.h VirtualBall.cpp VirtualBall.h Mode.h Camera.cpp Camera.h)
+add_executable(bezier main.cpp ${qrc_FILES} MainOpenGLWidget.cpp MainOpenGLWidget.h MainWindow.cpp MainWindow.h VirtualBall.cpp VirtualBall.h Mode.h Camera.cpp Camera.h GeometryEngine.cpp GeometryEngine.h)
 target_link_libraries(bezier
         Qt::Core
         Qt::Gui

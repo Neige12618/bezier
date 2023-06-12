@@ -8,24 +8,43 @@
 #include <QStatusBar>
 #include <QMenuBar>
 #include <QLabel>
+#include <QOpenGLWidget>
 #include "Mode.h"
+#include "MainOpenGLWidget.h"
+
 
 class MainWindow: public QMainWindow {
 public:
     MainWindow();
 
-    QStatusBar *statusBar;
+private:
+    MainOpenGLWidget *openglWidget;
+
     QMenuBar *menuBar;
-    QLabel *modeBar;
+    QStatusBar *statusBar;
+    QLabel *drawMode;
+    QLabel *pos;
+    QLabel *mode;
 
-    Mode mode;
-    DrawMode drawMode;
-
-private slots:
-    void BezierCurve();
+private:
+    void initMenuBar();
+    void initStatusBar();
 
 protected:
-    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+
+private slots:
+
+    void modeBezierCurve();
+    void modeNCurve();
+    void modeBSpline();
+    void modeBezierSurface();
+    void modeNSurface();
+    void modeBSplineSurface();
+    void modeEdit();
+    void modeView();
+
 };
 
 
