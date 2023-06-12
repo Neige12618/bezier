@@ -8,12 +8,12 @@
 
 
 MainOpenGLWidget::MainOpenGLWidget(QWidget *parent): QOpenGLWidget(parent) {
-    auto *p = dynamic_cast<MainWindow*> (parent);
-    statusBar = p->statusBar;
-    statusBar->showMessage("opengl");
-    connect(&timer, SIGNAL(timeout()), this, SLOT(time_out())) ;
-    timer.start(10);
+    this->parent = dynamic_cast<MainWindow*> (parent);
     setFocus();
+    mode = &this->parent->mode;
+    drawMode = &this->parent->drawMode;
+    statusBar = this->parent->statusBar;
+//    statusBar->showMessage("opengl");
 }
 
 void MainOpenGLWidget::initializeGL() {
@@ -25,10 +25,10 @@ void MainOpenGLWidget::initializeGL() {
 
     program.link();
     program.bind();
-    u_model = program.uniformLocation("model");
-    u_view = program.uniformLocation("view");
-    u_projection = program.uniformLocation("projection");
-    u_normal = program.uniformLocation("normal");
+    uModel = program.uniformLocation("model");
+    uView = program.uniformLocation("view");
+    uProjection = program.uniformLocation("projection");
+    uNormal = program.uniformLocation("normal");
 
     vertices.push_back({-0.5f,  0.5f, 0.0f}); // 左上
     vertices.push_back({0.5f,  0.5f,  0.0f}); // 右上
@@ -43,7 +43,6 @@ void MainOpenGLWidget::initializeGL() {
 }
 
 void MainOpenGLWidget::resizeGL(int w, int h) {
-    vBall.setBounds((float)w, (float)h);
     glViewport(0, 0, w, h);
 
 
@@ -52,90 +51,98 @@ void MainOpenGLWidget::resizeGL(int w, int h) {
 }
 
 void MainOpenGLWidget::paintGL() {
-    m_model.setToIdentity();
-    m_view.setToIdentity();
-    m_projection.setToIdentity();
-    m_normal.setToIdentity();
+    mModel.setToIdentity();
+    mView.setToIdentity();
+    mProjection.setToIdentity();
+    mNormal.setToIdentity();
 
 
-    m_model = vBall.RotateMatrix();
-    m_view.lookAt(camera.GetPos(), camera.GetCenter(),camera.GetUp());
-    m_projection.perspective(fov, (float)width() / (float)(height()), 0.1f, 1000.0f);
+    mModel.rotate(vBall.getRotation());
+    mView.lookAt(camera.GetPos(), camera.GetCenter(), camera.GetUp());
+    mProjection.perspective(fov, (float)width() / (float)(height()), 0.1f, 1000.0f);
 
     program.bind();
-    program.setUniformValue(u_model, m_model);
-    program.setUniformValue(u_view, m_view);
-    program.setUniformValue(u_projection, m_projection);
-    program.setUniformValue(u_normal, m_normal);
+    program.setUniformValue(uModel, mModel);
+    program.setUniformValue(uView, mView);
+    program.setUniformValue(uProjection, mProjection);
+    program.setUniformValue(uNormal, mNormal);
 
-    glDrawArrays(GL_LINES, 0, 4);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
+
 
 MainOpenGLWidget::~MainOpenGLWidget() {
     VAO.destroy();
 }
 
-void MainOpenGLWidget::time_out() {
-//    update();
-}
-
 
 void MainOpenGLWidget::mousePressEvent(QMouseEvent* e) {
-    if (e->button() == Qt::LeftButton) {
-        camera.click(e->pos());
-        leftButtonPressed = true;
-    } else if (e->button() == Qt::RightButton) {
-        vBall.click(e->pos());
-        rightButtonPressed = true;
+    if (*mode == Mode::ViewMode) {
+        if (e->button() == Qt::LeftButton) {
+            camera.press(e->pos());
+            leftButtonPressed = true;
+        } else if (e->button() == Qt::RightButton) {
+            vBall.press(e->pos());
+            rightButtonPressed = true;
+        }
     }
 }
 
 
 void MainOpenGLWidget::mouseMoveEvent(QMouseEvent* e) {
-    if (leftButtonPressed) {
-        camera.dragTo(e->pos());
-        update();
-        camera.click(e->pos());
+    QOpenGLWidget::mouseMoveEvent(e);
+    if (*mode == Mode::ViewMode) {
+        if (leftButtonPressed) {
+            camera.move(e->pos());
+            camera.press(e->pos());
+        }
+        if (rightButtonPressed) {
+            vBall.move(e->pos());
+        }
     }
-    if (rightButtonPressed) {
-        vBall.dragTo(e->pos());
-        update();
-    }
+    update();
+
 }
 
 
 void MainOpenGLWidget::mouseReleaseEvent(QMouseEvent* e) {
-    if (e->button() == Qt::LeftButton) {
-        leftButtonPressed = false;
-    } else if (e->button() == Qt::RightButton) {
-        rightButtonPressed = false;
-        vBall.push();
+    if (*mode == Mode::ViewMode) {
+        if (e->button() == Qt::LeftButton) {
+            leftButtonPressed = false;
+        } else if (e->button() == Qt::RightButton) {
+            rightButtonPressed = false;
+            vBall.release();
+        }
     }
+
 }
 
 
 void MainOpenGLWidget::wheelEvent(QWheelEvent* e) {
-    float offset;
-    if (e->angleDelta().y() & 0x80000000) {
-        offset = -1;
-    } else {
-        offset = 1;
-    }
+    if (*mode == Mode::ViewMode) {
+        float offset;
+        if (e->angleDelta().y() & 0x80000000) {
+            offset = -1;
+        } else {
+            offset = 1;
+        }
 
-    if (fov >= 1.0f && fov <= 89.0f) {
-        fov -= offset;
+        if (fov >= 1.0f && fov <= 89.0f) {
+            fov -= offset;
+        }
+        if (fov < 1.0f) {
+            fov = 1.0f;
+        } else if (fov > 89.0f) {
+            fov = 89.0f;
+        }
     }
-    if (fov < 1.0f) {
-        fov = 1.0f;
-    } else if (fov > 89.0f) {
-        fov = 89.0f;
-    }
-
     update();
 }
 
 void MainOpenGLWidget::keyPressEvent(QKeyEvent *e) {
-    camera.OnKeyBoard(e->key());
+    if (*mode == Mode::ViewMode) {
+        camera.OnKeyBoard(e->key());
+    }
     update();
 }
 

@@ -61,11 +61,11 @@ const QVector3D& Camera::GetCenter() {
 }
 
 
-void Camera::click(const QPoint &pos) {
+void Camera::press(const QPoint &pos) {
     last_pos = pos;
 }
 
-void Camera::dragTo(const QPoint &pos) {
+void Camera::move(const QPoint &pos) {
     new_pos = pos;
 
     const QVector3D vAxis(0.0f, 1.0f, 0.0f);

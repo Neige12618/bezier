@@ -15,6 +15,7 @@
 #include "MainWindow.h"
 #include "VirtualBall.h"
 #include "Camera.h"
+#include "Mode.h"
 
 
 
@@ -29,9 +30,6 @@ protected:
     ~MainOpenGLWidget() override;
 
 
-private slots:
-    void time_out();
-
 
 protected:
     void mousePressEvent(QMouseEvent*) override;
@@ -45,26 +43,36 @@ private:
     float fov = 45.0f;
     bool leftButtonPressed = false;
     bool rightButtonPressed = false;
-    QStatusBar *statusBar;
     QOpenGLShaderProgram program;
     QOpenGLVertexArrayObject VAO;
     QVector<QVector3D> vertices;
     VirtualBall vBall;
-    QTimer timer;
+    MainWindow *parent;
+    QStatusBar *statusBar;
     // shader uniform
-    int u_model{};
-    int u_view{};
-    int u_projection{};
-    int u_normal{};
+    int uModel{};
+    int uView{};
+    int uProjection{};
+    int uNormal{};
 
     // matrix
-    QMatrix4x4 m_projection;
-    QMatrix4x4 m_model;
-    QMatrix4x4 m_view;
-    QMatrix4x4 m_normal;
+    QMatrix4x4 mProjection;
+    QMatrix4x4 mModel;
+    QMatrix4x4 mView;
+    QMatrix4x4 mNormal;
 
-
+    // camera
     Camera camera;
+
+    // mode
+    Mode *mode;
+    DrawMode *drawMode;
+
+
+    // draw array
+    QVector<QVector3D> bezierCurve;
+    QVector<QVector3D> nCurve;
+    QVector<QVector3D> bSpline;
 };
 
 

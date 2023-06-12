@@ -22,8 +22,8 @@ public:
     const QVector3D& GetUp() const;
     [[nodiscard]]
     const QVector3D& GetCenter();
-    void click(const QPoint &pos);
-    void dragTo(const QPoint &pos);
+    void press(const QPoint &pos);
+    void move(const QPoint &pos);
 
 private:
     static void Rotate(QVector3D& src, float angle, const QVector3D& axe);
@@ -38,7 +38,7 @@ private:
     float m_angleH = 0.0f;
     float m_angleV = 0.0f;
 
-    float speed = 1.0f;
+    float speed = 0.5f;
 };
 
 

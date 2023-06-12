@@ -11,24 +11,20 @@
 
 class VirtualBall {
 public:
-    explicit VirtualBall(float width = 0, float height = 0);
+    VirtualBall() = default;
     ~VirtualBall() = default;
-    void setBounds(float new_width, float new_height);
-    QMatrix4x4 RotateMatrix();
+    void press(QPoint pos);
+    void move(QPoint pos);
+    void release();
     [[nodiscard]]
-    QVector3D mapToSphere(int x, int y) const;
-    void click(const QPoint &pos);
-    void dragTo(const QPoint &pos);
-    void push();
-    static QMatrix4x4 quaternionToMat(QQuaternion& q);
+    const QQuaternion& getRotation();
+
 
 private:
-    QVector3D last_pos{}; //点击屏幕时，映射到球面的坐标
-    QVector3D new_pos{};  //拖动后释放时，最后点映射到球面的坐标
-    float _width{};
-    float _height{};
-    QQuaternion currentRotate{};  //当前旋转 四元数
-    QQuaternion LastRotate{};  //前一个旋转 四元数
+    QVector2D mousePressPosition{};
+    QVector3D rotationAxis{};
+    float angle = 0.0f;
+    QQuaternion rotation{};
 };
 
 
