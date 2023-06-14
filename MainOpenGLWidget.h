@@ -21,14 +21,16 @@
 
 
 class MainOpenGLWidget: public QOpenGLWidget, QOpenGLFunctions {
-Q_OBJECT
+    Q_OBJECT
 public:
     explicit MainOpenGLWidget(QWidget* parent = nullptr);
+    ~MainOpenGLWidget() override;
+
+
 protected:
     void initializeGL() override;
     void resizeGL( int w, int h) override;
     void paintGL() override;
-    ~MainOpenGLWidget() override;
 
 private:
     void unProject(QVector3D &pos) const;
@@ -44,8 +46,8 @@ protected:
 
 private:
     float fov = 45.0f;
-    int width;
-    int height;
+    int width = 0;
+    int height = 0;
     bool leftButtonPressed = false;
     bool rightButtonPressed = false;
     QOpenGLShaderProgram program;
@@ -72,9 +74,12 @@ private:
 
     // control points
     QVector<QVector3D> controlPoints;
+    QVector<QVector<QVector3D>> controlPointsSurface;
 
     GeometryEngine *engine;
 
+public slots:
+    void clear();
 
 public:
     void modeBezierCurve();

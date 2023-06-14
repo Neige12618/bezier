@@ -8,6 +8,7 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH "D:/Qt6/6.5.0/mingw_64/")
 
+
 find_package(Qt6 COMPONENTS
         Core
         Gui

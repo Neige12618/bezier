@@ -2,7 +2,5 @@
     <qresource prefix="/">
         <file>shader/fragment.frag</file>
         <file>shader/vertex.vert</file>
-        <file>shader/tcs.glsl</file>
-        <file>shader/tes.glsl</file>
     </qresource>
 </RCC>

@@ -1,8 +1,11 @@
 #version 450 core
 
 out vec4 fragColor;
-
+in vec3 position;
 
 void main() {
-    fragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+    float sum = position.x + position.y + position.z;
+    vec3 p = position;
+    p /= sum;
+    fragColor = vec4(p, 1.0f);
 }

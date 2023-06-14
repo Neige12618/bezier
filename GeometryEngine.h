@@ -6,6 +6,8 @@
 #define BEZIER_GEOMETRYENGINE_H
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 #include "Mode.h"
 
 class GeometryEngine: protected QOpenGLFunctions{
@@ -14,26 +16,31 @@ public:
     void init();
     void draw(
         QOpenGLShaderProgram& _program,
-        DrawMode mode,
-        const QVector<QVector3D>& _controlPoints
+        DrawMode drawMode,
+        const QVector<QVector3D>& _controlPoints,
+        Mode mode
     );
     ~GeometryEngine() = default;
 
 private:
     // curve
-    QVector<QVector3D> vBezierCurve;
-    QVector<QVector3D> vNCurve;
-    QVector<QVector3D> vBSpline;
+    QOpenGLBuffer vbBezierCurve;
+    QOpenGLBuffer vbNCurve;
+    QOpenGLBuffer vbBSpline;
 
     // surface
-    QVector<QVector3D> vBezierSurface;
-    QVector<QVector3D> vNSurface;
-    QVector<QVector3D> vBSplineSurface;
+    QOpenGLBuffer vbBezierSurface;
+    QOpenGLBuffer vbNSurface;
+    QOpenGLBuffer vbBSplineSurface;
+
 
     const QVector<QVector3D> *controlPoints = nullptr;
+    QVector<QVector<QVector3D>> *controlPointsSurface = nullptr;
     QOpenGLShaderProgram *program = nullptr;
+    int precision = 100;
+    bool isSurface = false;
 
-
+    QOpenGLBuffer* currentVBO = nullptr;
 private:
     void drawBezierCurve();
     void drawNCurve();
@@ -41,6 +48,11 @@ private:
     void drawBezierSurface();
     void drawNSurface();
     void drawBSplineSurface();
+    void drawCurrent();
+    void drawControlPoints();
+
+    static QVector3D deCasteljau(const QVector<QVector3D>& controlPoints, float t);
+    QVector3D deCasteljau(float u, float v);
 };
 
 

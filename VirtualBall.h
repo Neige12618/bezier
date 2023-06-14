@@ -5,6 +5,7 @@
 #ifndef BEZIER_VIRTUALBALL_H
 #define BEZIER_VIRTUALBALL_H
 #include <QVector3D>
+#include <qvector2d.h>
 #include <QMatrix4x4>
 #include <QQuaternion>
 
@@ -18,6 +19,7 @@ public:
     void release();
     [[nodiscard]]
     const QQuaternion& getRotation();
+    void setRotateAxis(const QVector3D& r);
 
 
 private:

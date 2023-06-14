@@ -44,6 +44,7 @@ private slots:
     void modeBSplineSurface();
     void modeEdit();
     void modeView();
+    void backDefault();
 
 };
 

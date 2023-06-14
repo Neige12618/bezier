@@ -15,6 +15,8 @@ MainOpenGLWidget::MainOpenGLWidget(QWidget *parent): QOpenGLWidget(parent) {
 void MainOpenGLWidget::initializeGL() {
     initializeOpenGLFunctions();
     glEnable(GL_DEPTH_TEST);
+    engine->init();
+
 
     program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":shader/vertex.vert");
     program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":shader/fragment.frag");
@@ -52,7 +54,6 @@ void MainOpenGLWidget::paintGL() {
     mProjection.setToIdentity();
     mNormal.setToIdentity();
 
-
     mModel.rotate(vBall.getRotation());
     mView.lookAt(camera.GetPos(), camera.GetCenter(), camera.GetUp());
     mProjection.perspective(fov, (float)width / (float)height, 0.1f, 1000.0f);
@@ -64,13 +65,16 @@ void MainOpenGLWidget::paintGL() {
     program.setUniformValue(uProjection, mProjection);
     program.setUniformValue(uNormal, mNormal);
 
-    engine->draw(program, drawMode, controlPoints);
+    engine->draw(program, drawMode, controlPoints, mode);
+
+    program.release();
 }
 
 
 MainOpenGLWidget::~MainOpenGLWidget() {
     makeCurrent();
     program.destroyed();
+    delete engine;
     doneCurrent();
 }
 
@@ -100,7 +104,9 @@ void MainOpenGLWidget::mousePressEvent(QMouseEvent* e) {
 
             leftButtonPressed = true;
         } else if (e->button() == Qt::RightButton) {
-            controlPoints.pop_back();
+            if (!controlPoints.empty()) {
+                controlPoints.pop_back();
+            }
             rightButtonPressed = true;
         }
         update();
@@ -217,9 +223,14 @@ void MainOpenGLWidget::unProject(QVector3D &pos) const {
     projection.setToIdentity();
     projection.perspective(fov, (float)width / (float)height, 10.0f, 1000.0f);
 
-    pos = pos.unproject( mView, projection, {0, 0, width, height});
+    pos = pos.unproject( mView * mModel, projection, {0, 0, width, height});
     pos.setY(pos.y());
 
+}
+
+void MainOpenGLWidget::clear() {
+    controlPoints.clear();
+    update();
 }
 
 

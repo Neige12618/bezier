@@ -31,6 +31,8 @@ void MainWindow::initMenuBar() {
     menuBar->addAction("BSpline surface  |", this, &MainWindow::modeBSplineSurface);
     menuBar->addAction("view mode  |", this, &MainWindow::modeView);
     menuBar->addAction("edit mode  |", this, &MainWindow::modeEdit);
+    menuBar->addAction("clear  |", openglWidget, &MainOpenGLWidget::clear);
+    menuBar->addAction("default  |", this, &MainWindow::backDefault);
 
 
     setMenuBar(menuBar);
@@ -109,4 +111,10 @@ void MainWindow::mousePressEvent(QMouseEvent *e) {
             " y: " +
             QString::number(e->pos().y())
     );
+}
+
+void MainWindow::backDefault() {
+    delete openglWidget;
+    openglWidget = new MainOpenGLWidget;
+    setCentralWidget(openglWidget);
 }
