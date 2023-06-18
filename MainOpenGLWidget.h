@@ -13,7 +13,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QStatusBar>
-#include "VirtualBall.h"
+#include "Controller.h"
 #include "Camera.h"
 #include "Mode.h"
 #include "GeometryEngine.h"
@@ -34,6 +34,7 @@ protected:
 
 private:
     void unProject(QVector3D &pos) const;
+    void changeControlPoint(QVector3D &&pos = {}, bool add = false, bool clear = false);
 
 
 protected:
@@ -65,7 +66,7 @@ private:
 
     // camera
     Camera camera;
-    VirtualBall vBall;
+    Controller controller;
 
     // mode
     Mode mode = Mode::EditMode;
@@ -75,6 +76,10 @@ private:
     // control points
     QVector<QVector3D> controlPoints;
     QVector<QVector<QVector3D>> controlPointsSurface;
+    int controlRow = 5;
+    int degree = 6;
+
+    bool isSurface = false;
 
     GeometryEngine *engine;
 
@@ -90,6 +95,7 @@ public:
     void modeBSplineSurface();
     void modeEdit();
     void modeView();
+    void setDegree(int d);
 };
 
 

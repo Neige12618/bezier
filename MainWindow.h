@@ -45,6 +45,7 @@ private slots:
     void modeEdit();
     void modeView();
     void backDefault();
+    void setDegree();
 
 };
 

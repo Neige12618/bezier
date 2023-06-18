@@ -4,6 +4,7 @@
 
 #include "MainWindow.h"
 #include <QMouseEvent>
+#include <QInputDialog>
 
 MainWindow::MainWindow():
     openglWidget(new MainOpenGLWidget(this)),
@@ -17,22 +18,27 @@ MainWindow::MainWindow():
     initStatusBar();
 
     setCentralWidget(openglWidget);
+
     resize(800, 600);
 }
 
 
 void MainWindow::initMenuBar() {
+    auto *drawMenu = new QMenu("  draw mode  ");
+    drawMenu->addAction("bezier", this, &MainWindow::modeBezierCurve);
+    drawMenu->addAction("NURBS", this, &MainWindow::modeNCurve);
+    drawMenu->addAction("BSpline", this, &MainWindow::modeBSpline);
+    drawMenu->addAction("bezier surface", this, &MainWindow::modeBezierSurface);
+    drawMenu->addAction("NURBS surface", this, &MainWindow::modeNSurface);
+    drawMenu->addAction("BSpline surface", this, &MainWindow::modeBSplineSurface);
+    menuBar->addMenu(drawMenu);
 
-    menuBar->addAction("bezier  |", this, &MainWindow::modeBezierCurve);
-    menuBar->addAction("NURBS  |", this, &MainWindow::modeNCurve);
-    menuBar->addAction("BSpline  |", this, &MainWindow::modeBSpline);
-    menuBar->addAction("bezier surface  |", this, &MainWindow::modeBezierSurface);
-    menuBar->addAction("NURBS surface  |", this, &MainWindow::modeNSurface);
-    menuBar->addAction("BSpline surface  |", this, &MainWindow::modeBSplineSurface);
-    menuBar->addAction("view mode  |", this, &MainWindow::modeView);
-    menuBar->addAction("edit mode  |", this, &MainWindow::modeEdit);
-    menuBar->addAction("clear  |", openglWidget, &MainOpenGLWidget::clear);
-    menuBar->addAction("default  |", this, &MainWindow::backDefault);
+
+    menuBar->addAction("  view mode  ", this, &MainWindow::modeView);
+    menuBar->addAction("  edit mode  ", this, &MainWindow::modeEdit);
+    menuBar->addAction("  clear  ", openglWidget, &MainOpenGLWidget::clear);
+    menuBar->addAction("  default  ", this, &MainWindow::backDefault);
+    menuBar->addAction("  degree  ", this, &MainWindow::setDegree);
 
 
     setMenuBar(menuBar);
@@ -117,4 +123,9 @@ void MainWindow::backDefault() {
     delete openglWidget;
     openglWidget = new MainOpenGLWidget;
     setCentralWidget(openglWidget);
+
+}
+
+void MainWindow::setDegree() {
+    openglWidget->setDegree(QInputDialog::getInt(this, "输入degree", ""));
 }

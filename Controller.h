@@ -2,18 +2,18 @@
 // Created by Saatus on 2023/6/5.
 //
 
-#ifndef BEZIER_VIRTUALBALL_H
-#define BEZIER_VIRTUALBALL_H
+#ifndef BEZIER_CONTROLLER_H
+#define BEZIER_CONTROLLER_H
 #include <QVector3D>
 #include <qvector2d.h>
 #include <QMatrix4x4>
 #include <QQuaternion>
 
 
-class VirtualBall {
+class Controller {
 public:
-    VirtualBall() = default;
-    ~VirtualBall() = default;
+    Controller() = default;
+    ~Controller() = default;
     void press(QPoint pos);
     void move(QPoint pos);
     void release();
@@ -30,4 +30,4 @@ private:
 };
 
 
-#endif //BEZIER_VIRTUALBALL_H
+#endif //BEZIER_CONTROLLER_H

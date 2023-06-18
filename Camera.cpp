@@ -36,6 +36,14 @@ bool Camera::OnKeyBoard(int key) {
             m_pos += right * speed;
             break;
         }
+        case Qt::Key_Space: {
+            m_pos += m_up * speed;
+            break;
+        }
+        case Qt::Key_Shift: {
+            m_pos -= m_up * speed;
+            break;
+        }
         default: {
             ret = false;
         }

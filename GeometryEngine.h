@@ -12,14 +12,14 @@
 
 class GeometryEngine: protected QOpenGLFunctions{
 public:
-    GeometryEngine();
-    void init();
-    void draw(
-        QOpenGLShaderProgram& _program,
-        DrawMode drawMode,
-        const QVector<QVector3D>& _controlPoints,
-        Mode mode
+    GeometryEngine(
+        bool &_isSurface,
+        QVector<QVector3D> &_controlPoints,
+        QVector<QVector<QVector3D>> &_controlPointsSurface,
+        QOpenGLShaderProgram &_program
     );
+    void init();
+    void draw();
     ~GeometryEngine() = default;
 
 private:
@@ -35,13 +35,14 @@ private:
 
 
     const QVector<QVector3D> *controlPoints = nullptr;
-    QVector<QVector<QVector3D>> *controlPointsSurface = nullptr;
+    const QVector<QVector<QVector3D>> *controlPointsSurface = nullptr;
     QOpenGLShaderProgram *program = nullptr;
     int precision = 100;
-    bool isSurface = false;
+    bool *isSurface = nullptr;
+
 
     QOpenGLBuffer* currentVBO = nullptr;
-private:
+public:
     void drawBezierCurve();
     void drawNCurve();
     void drawBSpline();

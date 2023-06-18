@@ -2,11 +2,11 @@
 // Created by Saatus on 2023/6/5.
 //
 
-#include "VirtualBall.h"
+#include "Controller.h"
 
 
 
-void VirtualBall::move(QPoint pos) {
+void Controller::move(QPoint pos) {
     QVector2D diff =QVector2D(pos) - mousePressPosition;
 
     QVector3D n = QVector3D(diff.y(), diff.x(), 0.0f).normalized();
@@ -20,16 +20,20 @@ void VirtualBall::move(QPoint pos) {
     rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angle) * rotation;
 }
 
-void VirtualBall::press(QPoint pos) {
+void Controller::press(QPoint pos) {
     mousePressPosition = QVector2D(pos);
 }
 
 
-void VirtualBall::release() {
+void Controller::release() {
     angle = 0;
 }
 
 
-const QQuaternion &VirtualBall::getRotation() {
+const QQuaternion &Controller::getRotation() {
     return rotation;
+}
+
+void Controller::setRotateAxis(const QVector3D& r) {
+    rotationAxis = r;
 }
