@@ -4,8 +4,7 @@ Camera::Camera() {
     m_pos = QVector3D(0.0f, 0.0f, 10.0f);
     m_target = QVector3D(0.0f, 0.0f, -1.0f);
     m_up = QVector3D(0.0f, 1.0f, 0.0f);
-    m_center = m_pos + m_target * distance;
-
+    m_center = m_pos + m_target * distance; 
 }
 
 Camera::Camera(const QVector3D &Pos, const QVector3D &Target, QVector3D &Up):
@@ -79,6 +78,7 @@ void Camera::move(const QPoint &pos) {
 
     const QVector3D vAxis(0.0f, 1.0f, 0.0f);
 
+    // 计算偏移量
     const int deltaX = new_pos.x() - last_pos.x();
     const int deltaY = new_pos.y() - last_pos.y();
 
@@ -86,6 +86,7 @@ void Camera::move(const QPoint &pos) {
     m_angleV += (float)deltaY / 20.0f;
 
 
+    // 默认方向
     QVector3D view = QVector3D(0.0f, 0.0f, -1.0f);
     Rotate(view, m_angleH, vAxis);
     view.normalize();
@@ -97,7 +98,7 @@ void Camera::move(const QPoint &pos) {
 
     m_target = view;
 
-
+    // 摄像机方向和水平轴的叉乘即是摄像机上方
     m_up = QVector3D::crossProduct(m_target, hAxis);
     m_up.normalize();
 }

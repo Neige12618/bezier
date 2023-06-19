@@ -215,6 +215,9 @@ QVector3D GeometryEngine::deCasteljau(const QVector<QVector3D>& control, float t
 
 QVector3D GeometryEngine::deCasteljau(float u, float v) {
     auto n = controlPointsSurface->length();
+    if (n == 0) {
+        return {};
+    }
     QVector<QVector3D> q(n);
 
     for (int k = 0; k < n; k ++){
