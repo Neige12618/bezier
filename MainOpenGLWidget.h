@@ -13,6 +13,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QStatusBar>
+#include <qvectornd.h>
 #include "Controller.h"
 #include "Camera.h"
 #include "Mode.h"
@@ -96,6 +97,9 @@ public:
     void modeEdit();
     void modeView();
     void setDegree(int d);
+
+    void saveControlPoints();
+    void loadControlPoints();
 };
 
 

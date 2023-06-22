@@ -59,12 +59,32 @@ void GeometryEngine::drawBezierCurve() {
 }
 
 
+
 void GeometryEngine::drawNCurve() {
     currentVBO = &vbNCurve;
 
     QVector<QVector3D> buffer;
+    // 给我一个绘制nurbs曲线的算法
     buffer = *controlPoints;
     qDebug() << buffer;
+
+    int n = buffer.length();
+    QVector<QVector3D> result;
+    int i = 0;
+    double t = 0.0;
+    while (i < n) {
+        t += 1.0 / precision;
+        result.push_back(deBoor(buffer, t));
+        i++;
+    }
+
+    vbNCurve.bind();
+
+    int count = (int) (result.length() * sizeof(QVector3D));
+    vbNCurve.allocate(result.constData(), count);
+
+    vbNCurve.release();
+
 
 }
 
@@ -195,7 +215,7 @@ void GeometryEngine::drawControlPoints() {
     program->release();
 }
 
-
+// 一维deCasteljau算法实现
 QVector3D GeometryEngine::deCasteljau(const QVector<QVector3D>& control, float t) {
     auto n = control.length();
     if (n == 0) {
@@ -213,6 +233,7 @@ QVector3D GeometryEngine::deCasteljau(const QVector<QVector3D>& control, float t
     return point[0];
 }
 
+// 二维deCasteljau算法实现(借助一维)
 QVector3D GeometryEngine::deCasteljau(float u, float v) {
     auto n = controlPointsSurface->length();
     if (n == 0) {
@@ -229,3 +250,52 @@ QVector3D GeometryEngine::deCasteljau(float u, float v) {
 }
 
 
+// deBoor算法实现
+QVector3D GeometryEngine::deBoor(QVector<QVector3D> &controlPoints, double t) {
+    int n = controlPoints.length() - 1;
+    int p = degree;
+    int k = 0;
+
+    while (k < n - p && t >= controlPoints[k + 1].x()) {
+        k += 1;
+    }
+
+    QVector<QVector3D> d;
+    for (int i = 0; i <= p; i++) {
+        d.push_back(controlPoints[i + k - p]);
+    }
+
+    for (int i = 1; i <= p; i++) {
+        for (int j = p; j >= i; j--) {
+            double w = (t - d[j].x()) / (d[j + i - 1].x() - d[j].x());
+            d[j] = (1 - w) * d[j - 1] + w * d[j];
+        }
+    }
+
+    return d[p];
+} 
+
+// 给我写一个deboor算法的三维版本！！！
+QVector3D GeometryEngine::deBoor(QVector<QVector3D> &controlPoints, double u, double v) {
+    int n = controlPoints.length() - 1;
+    int k = degree;
+    int r = 0;
+
+    while (r < n - k && u >= controlPoints[r + 1].x()) {
+        r++;
+    }
+
+    QVector<QVector3D> d;
+    for (int i = 0; i <= k; i++) {
+        d.push_back(controlPoints[r - i]);
+    }
+
+    for (int i = 1; i <= k; i++) {
+        for (int j = k; j >= i; j--) {
+            double w = (u - d[j].x()) / (d[j + i - 1].x() - d[j].x());
+            d[j] = (1 - w) * d[j - 1] + w * d[j];
+        }
+    }
+
+    return d[k];
+}

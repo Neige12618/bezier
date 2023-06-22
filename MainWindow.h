@@ -9,7 +9,6 @@
 #include <QMenuBar>
 #include <QLabel>
 #include <QOpenGLWidget>
-#include "Mode.h"
 #include "MainOpenGLWidget.h"
 
 

@@ -6,6 +6,8 @@
 #include <QMouseEvent>
 #include <QInputDialog>
 
+
+
 MainWindow::MainWindow():
     openglWidget(new MainOpenGLWidget(this)),
     statusBar(new QStatusBar(this)),
@@ -39,6 +41,8 @@ void MainWindow::initMenuBar() {
     menuBar->addAction("  clear  ", openglWidget, &MainOpenGLWidget::clear);
     menuBar->addAction("  default  ", this, &MainWindow::backDefault);
     menuBar->addAction("  degree  ", this, &MainWindow::setDegree);
+    menuBar->addAction("  save  ", openglWidget, &MainOpenGLWidget::saveControlPoints);
+    menuBar->addAction("  load  ", openglWidget, &MainOpenGLWidget::loadControlPoints);
 
 
     setMenuBar(menuBar);
@@ -129,3 +133,5 @@ void MainWindow::backDefault() {
 void MainWindow::setDegree() {
     openglWidget->setDegree(QInputDialog::getInt(this, "输入degree", ""));
 }
+
+

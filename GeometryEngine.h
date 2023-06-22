@@ -8,7 +8,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
-#include "Mode.h"
+
 
 class GeometryEngine: protected QOpenGLFunctions{
 public:
@@ -33,6 +33,9 @@ private:
     QOpenGLBuffer vbNSurface;
     QOpenGLBuffer vbBSplineSurface;
 
+    // degree
+    int degree = 3;
+
 
     const QVector<QVector3D> *controlPoints = nullptr;
     const QVector<QVector<QVector3D>> *controlPointsSurface = nullptr;
@@ -54,6 +57,9 @@ public:
 
     static QVector3D deCasteljau(const QVector<QVector3D>& controlPoints, float t);
     QVector3D deCasteljau(float u, float v);
+    QVector3D deBoor(QVector<QVector3D> &controlPoints, double t);
+    QVector3D deBoor(QVector<QVector3D> &controlPoints, double u, double v);
+
 };
 
 

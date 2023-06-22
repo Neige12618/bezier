@@ -5,6 +5,8 @@
 #include "MainOpenGLWidget.h"
 #include <QMouseEvent>
 #include <QRandomGenerator>
+#include <QFileDialog>
+#include <QFile>
 
 
 MainOpenGLWidget::MainOpenGLWidget(QWidget *parent): QOpenGLWidget(parent) {
@@ -343,8 +345,124 @@ void MainOpenGLWidget::setDegree(int d) {
 }
 
 
+void MainOpenGLWidget::saveControlPoints() {
+    QFile file(QFileDialog::getSaveFileName(this, "save control points", "", "txt(*.txt)"));
+    // 如果文件打开失败, 直接返回
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        return;
+    }
+    QTextStream out(&file);
+
+    // 如果是曲面, 那么将曲面的控制点写入文件
+    if (isSurface) {
+        out << "surface\n";
+        // 判断曲面类型
+        if (drawMode == DrawMode::BezierSurface) {
+            out << "bezier\n";
+        } else if (drawMode == DrawMode::NURBSSurface) {
+            out << "nurbs\n";
+        } else if (drawMode == DrawMode::BSplineSurface) {
+            out << "bspline\n";
+        }
+
+        // 写入曲面阶数
+        out << degree << "\n";
+
+        // 将曲面的控制点写入文件
+        for (auto &line: controlPointsSurface) {
+            for (auto &p: line) {
+                out << p.x() << " " << p.y() << " " << p.z() << "\n";
+            }
+        }
+    } else {
+        // 否则将曲线的控制点写入文件
+        out << "curve\n";
+
+        // 判断曲线类型
+        if (drawMode == DrawMode::Bezier) {
+            out << "bezier\n";
+        } else if (drawMode == DrawMode::NURBS) {
+            out << "nurbs\n";
+        } else if (drawMode == DrawMode::BSpline) {
+            out << "bspline\n";
+        }
 
 
+        // 将曲线的控制点写入文件
+        for (auto &point: controlPoints) {
+            out << point.x() << " " << point.y() << " " << point.z() << "\n";
+        }
+    }
+}
 
 
+void MainOpenGLWidget::loadControlPoints() {
+    QFile file(QFileDialog::getOpenFileName(this, "load control points", "", "txt(*.txt)"));
+    // 如果文件打开失败, 直接返回
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        return;
+    }
 
+    QTextStream in(&file);
+    QString surfaceOrCurve = in.readLine();
+    if (surfaceOrCurve == "surface") {
+        isSurface = true;
+    } else {
+        isSurface = false;
+    }
+
+    // 如果是曲面, 那么将文件写入曲面控制点
+    if (isSurface) {
+        controlPointsSurface.clear();
+
+        QString type = in.readLine();
+        if (type == "bezier") {
+            drawMode = DrawMode::BezierSurface;
+        } else if (type == "nurbs") {
+            drawMode = DrawMode::NURBSSurface;
+        } else if (type == "bspline") {
+            drawMode = DrawMode::BSplineSurface;
+        }
+
+        degree = in.readLine().toInt();
+
+        // 将曲面的控制点写入文件
+        QVector<QVector3D> line;
+        while (!in.atEnd()) {
+            QString lineStr = in.readLine();
+            QStringList lineList = lineStr.split(" ");
+            line.push_back(QVector3D(lineList[0].toFloat(), lineList[1].toFloat(), lineList[2].toFloat()));
+            if (line.size() >= degree) {
+                controlPointsSurface.push_back(line);
+                line.clear();
+            }
+        }
+
+        // 为了与changeControlPoints函数保持一致
+        controlPointsSurface.emplace_back();
+        controlPointsSurface.last().emplace_back();
+    } else {
+        // 否则将文件写入曲线控制点
+        controlPoints.clear();
+
+        QString type = in.readLine();
+        if (type == "bezier") {
+            drawMode = DrawMode::Bezier;
+        } else if (type == "nurbs") {
+            drawMode = DrawMode::NURBS;
+        } else if (type == "bspline") {
+            drawMode = DrawMode::BSpline;
+        }
+
+        // 将曲线的控制点写入文件
+        while (!in.atEnd()) {
+            QString lineStr = in.readLine();
+            QStringList lineList = lineStr.split(" ");
+            controlPoints.push_back(QVector3D(lineList[0].toFloat(), lineList[1].toFloat(), lineList[2].toFloat()));
+        }
+
+        // 为了与changeControlPoints函数保持一致
+        controlPoints.emplace_back();
+    }
+    changeControlPoint();
+}
