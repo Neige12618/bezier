@@ -319,7 +319,7 @@ void MainOpenGLWidget::changeControlPoint(QVector3D &&v, bool add, bool clear) {
             break;
         }
         case BSpline: {
-            engine->drawBezierCurve();
+            engine->drawBSpline();
             break;
         }
         case BezierSurface: {
@@ -342,6 +342,7 @@ void MainOpenGLWidget::changeControlPoint(QVector3D &&v, bool add, bool clear) {
 
 void MainOpenGLWidget::setDegree(int d) {
     degree = d;
+    engine->degree = d;
 }
 
 

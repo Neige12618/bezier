@@ -21,6 +21,7 @@ public:
     void init();
     void draw();
     ~GeometryEngine() = default;
+    int degree = 3;
 
 private:
     // curve
@@ -33,15 +34,15 @@ private:
     QOpenGLBuffer vbNSurface;
     QOpenGLBuffer vbBSplineSurface;
 
-    // degree
-    int degree = 3;
 
 
     const QVector<QVector3D> *controlPoints = nullptr;
     const QVector<QVector<QVector3D>> *controlPointsSurface = nullptr;
-    QOpenGLShaderProgram *program = nullptr;
     int precision = 100;
     bool *isSurface = nullptr;
+    QVector<float> knot;
+
+    QOpenGLShaderProgram *program = nullptr;
 
 
     QOpenGLBuffer* currentVBO = nullptr;
@@ -57,9 +58,10 @@ public:
 
     static QVector3D deCasteljau(const QVector<QVector3D>& controlPoints, float t);
     QVector3D deCasteljau(float u, float v);
-    QVector3D deBoor(QVector<QVector3D> &controlPoints, double t);
-    QVector3D deBoor(QVector<QVector3D> &controlPoints, double u, double v);
-
+    QVector3D deBoor(const QVector<QVector3D> &controlPoints, double t);
+    QVector3D deBoor(double u, double v);
+    float deBoor_Cox(double t, int k, int i);
+    void initKnot(int n, bool bspline = true);
 };
 
 
