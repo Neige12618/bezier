@@ -360,7 +360,7 @@ float GeometryEngine::deBoor_Cox(double u, int k, int i) {
 
 void GeometryEngine::initKnot(int n, bool bspline) {
     // 初始化knot
-    knot.resize(n);
+    knot.resize(n + degree + 1);
     for (int i = 0; i < n + degree + 1; i++) {
         knot[i] = i;
     }
